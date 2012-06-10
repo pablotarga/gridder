@@ -44,8 +44,8 @@ module Gridder
     
     builder = Nokogiri::HTML::Builder.new do |doc|
       
-      doc.table(:border => 1) do
-        doc.thead do
+      doc.table(config[:table]) do
+        doc.thead(config[:thead]) do
           header_rows.each do |row|
             doc.tr do
               row.each do |cell|
@@ -54,7 +54,7 @@ module Gridder
             end
           end
         end
-        doc.tbody do
+        doc.tbody(config[:tbody]) do
           if data.blank?
             doc.tr{ doc.td(config[:empty_message], :colspan => config[:body].size) }
           else
