@@ -1,0 +1,16 @@
+<h1>Welcome#index</h1>
+<p>Find me in app/views/welcome/index.html.erb</p>
+
+<p>
+  <%= Gridder.for([1,2,3,4,5], :body => [{:title => "Col1::Sub1", :data => lambda{123}},
+                                         {:title => "Col1::Sub2", :data => lambda{123}},
+                                         {:title => "Col1::Sub3", :data => lambda{123}},
+                                         {:title => "Col2", :data => lambda{123}},
+                                         {:title => "Col3::Sub1", :data => lambda{123}},
+                                         {:title => "Col3::Sub2::Level1", :data => lambda{123}},
+                                         {:title => "Col3::Sub2::Level2", :data => lambda{123}},
+                                         {:title => "Col3::Sub2::Level3", :data => lambda{123}},
+                                         {:title => "Col3::Sub2::Level4", :data => lambda{123}},
+  ]) %>
+</p>
+
