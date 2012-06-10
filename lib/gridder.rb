@@ -56,7 +56,7 @@ module Gridder
         end
         doc.tbody(config[:tbody]) do
           if data.blank?
-            doc.tr{ doc.td(config[:empty_message], :colspan => config[:body].size) }
+            doc.tr{ doc.td(config[:empty_message], :class => :empty, :colspan => config[:body].size) }
           else
             data.each do |d|
               doc.tr do
