@@ -1,36 +1,34 @@
 require "nokogiri"
 module Gridder
 
-  extend self
-
   GRID_HEADER_SPLITTER = "::"
-  def for(data, *opts)
+  def self.for(data, *opts)
     config = {:empty_message => "Empty"}
     config = config.update(opts.extract_options!)
-    
+
     titles = config[:body].map{|e| e[:title].to_s}
     max_level = titles.map{|e| e.split(GRID_HEADER_SPLITTER).size}.max
-    
+
     header_rows = []
     max_level.times{header_rows << []}
-    
+
     titles.each do |title_token|
       if title_token.blank?
         header_rows[0] << {:title => title_token, :rowspan => max_level}
         next
       end
-      
+
       splitted_title_token = title_token.split(GRID_HEADER_SPLITTER)
-      
+
       splitted_title_token.each_with_index do |title, idx|
         level = idx+1
         _hash = {}
         _hash[:title] = title
-      
+
         if (splitted_title_token.size == level) && (max_level > level)
           _hash[:rowspan] = (max_level - idx)
         end
-      
+
         if (header_rows[idx].last || {})[:title] != _hash[:title]
           header_rows[idx] << _hash
         else
@@ -38,18 +36,18 @@ module Gridder
           a[:colspan] ||= 1
           a[:colspan] += 1
         end
-      
+
       end
     end
-    
+
     builder = Nokogiri::HTML::Builder.new do |doc|
-      
+
       doc.table(config[:table]) do
         doc.thead(config[:thead]) do
           header_rows.each do |row|
             doc.tr do
               row.each do |cell|
-                doc.th(:rowspan => cell[:rowspan], :colspan => cell[:colspan]){ doc.cdata cell[:title] } 
+                doc.th(:rowspan => cell[:rowspan], :colspan => cell[:colspan]){ doc.cdata cell[:title] }
               end
             end
           end
@@ -58,18 +56,26 @@ module Gridder
           if data.blank?
             doc.tr{ doc.td(config[:empty_message], :class => :empty, :colspan => config[:body].size) }
           else
-            data.each do |d|
-              doc.tr do
-                config[:body].each do |b|
-                  b.symbolize_keys!
+            data.each do |record|
+              tr_config = if config[:tr].blank? && record.is_a?(ActiveRecord::Base)
+                            {:id => ActionController::RecordIdentifier.dom_id(record)}
+                          elsif config[:tr].is_a?(Proc)
+                            config[:tr].arity.zero? ? config[:tr].call : config[:tr].call(record)
+                          else
+                            record.send(config[:tr])
+                          end
+
+              doc.tr(tr_config) do
+                config[:body].each do |cell|
+                  cell.symbolize_keys!
                   opts = {}
-                  opts[:class] = b[:class] if b[:class].present?
-                  opts[:style] = b[:style] if b[:style].present?
-                  
-                  r = if b[:data].is_a?(Proc)
-                        b[:data].arity.zero? ? b[:data].call : b[:data].call(d)
+                  opts[:class] = cell[:class] if cell[:class].present?
+                  opts[:style] = cell[:style] if cell[:style].present?
+
+                  r = if cell[:data].is_a?(Proc)
+                        cell[:data].arity.zero? ? cell[:data].call : cell[:data].call(record)
                       else
-                        d.send(b[:data])
+                        record.send(cell[:data])
                       end
 
                   doc.td(opts){doc.cdata r}
@@ -77,12 +83,11 @@ module Gridder
               end
             end
           end
-          
+
         end
-      end      
+      end
     end
-    
+
     builder.to_html.html_safe
   end
-
 end

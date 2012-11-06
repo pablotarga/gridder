@@ -7,3 +7,5 @@ test/dummy/tmp/
 test/dummy/.sass-cache
 
 gridder-*.gem
+
+Gemfile.lock
