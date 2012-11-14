@@ -88,6 +88,6 @@ module Gridder
       end
     end
 
-    builder.to_html.html_safe
+    builder.doc.root.to_html.html_safe
   end
 end
