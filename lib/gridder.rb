@@ -61,8 +61,10 @@ module Gridder
                             {:id => ActionController::RecordIdentifier.dom_id(record)}
                           elsif config[:tr].is_a?(Proc)
                             config[:tr].arity.zero? ? config[:tr].call : config[:tr].call(record)
-                          else
+                          elsif config[:tr].is_a?(Symbol)
                             record.send(config[:tr])
+                          else
+                            config[:tr]
                           end
 
               doc.tr(tr_config) do

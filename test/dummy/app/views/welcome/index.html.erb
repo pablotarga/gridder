@@ -1,16 +1,51 @@
-<h1>Welcome#index</h1>
-<p>Find me in app/views/welcome/index.html.erb</p>
+<h1>Demo</h1>
 
 <p>
-  <%= Gridder.for([1,2,3,4,5], :body => [{:title => "Col1::Sub1", :data => lambda{123}},
-                                         {:title => "Col1::Sub2", :data => lambda{123}},
-                                         {:title => "Col1::Sub3", :data => lambda{123}},
-                                         {:title => "Col2", :data => lambda{123}},
-                                         {:title => "Col3::Sub1", :data => lambda{123}},
-                                         {:title => "Col3::Sub2::Level1", :data => lambda{123}},
-                                         {:title => "Col3::Sub2::Level2", :data => lambda{123}},
-                                         {:title => "Col3::Sub2::Level3", :data => lambda{123}},
-                                         {:title => "Col3::Sub2::Level4", :data => lambda{123}},
-  ]) %>
+  Simples, data => :nome_do_attributo
+  <%= Gridder.for(@list, :body => [{:title => "Name", :data => :name}] ) %>
+</p>
+
+<p>
+  Lambda, lambda{|registro| registro.attributo}
+  <%= Gridder.for(@list, :body => [ {:title => "Name", :data => :name},
+                                    {:title => "Street", :data => lambda{|e|[e.address.number, e.address.street].join(", ")}},
+                                    {:title => "City", :data => lambda{|e|e.address.city}},
+                                    {:title => "State", :data => lambda{|e|e.address.state}},
+                                    {:title => "Country", :data => lambda{|e|e.address.country}}
+                                    ] ) %>
+</p>
+
+<p>
+  Definindo atributos
+  <%= Gridder.for(@list, :body => [ {:title => "Name", :data => :name},
+                                    {:title => "Street", :data => lambda{|e|[e.address.number, e.address.street].join(", ")}},
+                                    {:title => "City", :data => lambda{|e|e.address.city}},
+                                    {:title => "State", :data => lambda{|e|e.address.state}},
+                                    {:title => "Country", :data => lambda{|e|e.address.country}}
+                                    ],
+                         :table => {:style => "background-color:#efefef"},
+                         :tr    => {:style => "color:red"},
+                         :thead => {:style => "font-family:tahoma;font-size:30px"} ) %>
+</p>
+
+<p>
+  Adicionando namespace no cabeçalho
+  <%= Gridder.for(@list, :body => [ {:title => "Name", :data => :name},
+                                    {:title => "Address::Street", :data => lambda{|e|[e.address.number, e.address.street].join(", ")}, :style => "width:200px"},
+                                    {:title => "Address::City", :data => lambda{|e|e.address.city}},
+                                    {:title => "Address::State", :data => lambda{|e|e.address.state}},
+                                    {:title => "Address::Country", :data => lambda{|e|e.address.country}}
+                                    ], :table => {:border => 1, :cellpadding => 5, :cellspacing=> 0}) %>
+</p>
+
+<p>
+  Adicionando namespace de 2 niveis no cabeçalho
+  <%= Gridder.for(@list, :body => [ {:title => "Name", :data => :name},
+                                    {:title => "Address::Number", :data => lambda{|e|e.address.number}, :style => "width:50px"},
+                                    {:title => "Address::Street", :data => lambda{|e|e.address.street}, :style => "width:150px"},
+                                    {:title => "Address::Region::City", :data => lambda{|e|e.address.city}},
+                                    {:title => "Address::Region::State", :data => lambda{|e|e.address.state}},
+                                    {:title => "Address::Region::Country", :data => lambda{|e|e.address.country}}
+                                    ], :table => {:border => 1, :cellpadding => 5, :cellspacing=> 0}) %>
 </p>
 
