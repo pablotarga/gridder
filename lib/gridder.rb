@@ -69,17 +69,7 @@ module Gridder
 
               doc.tr(tr_config) do
                 config[:body].each do |cell|
-                  cell.symbolize_keys!
-                  opts = {}
-                  opts[:class] = cell[:class] if cell[:class].present?
-                  opts[:style] = cell[:style] if cell[:style].present?
-
-                  r = if cell[:data].is_a?(Proc)
-                        cell[:data].arity.zero? ? cell[:data].call : cell[:data].call(record)
-                      else
-                        record.send(cell[:data])
-                      end
-
+                  r, opts = Gridder.get_cell_content(cell, record)
                   doc.td(opts){doc.cdata r}
                 end
               end
@@ -87,9 +77,35 @@ module Gridder
           end
 
         end
+
+        if config[:footer] && config[:footer].is_a?(Array)
+          doc.tfoot(config[:tfooter]) do
+            doc.tr do
+              config[:footer].each do |cell|
+                r, opts = Gridder.get_cell_content(cell, data)
+                doc.td(opts){doc.cdata r}
+              end
+            end
+          end
+        end
       end
     end
 
     builder.doc.root.to_html.html_safe
+  end
+
+private
+  def self.get_cell_content(cell, record)
+    cell.symbolize_keys!
+    opts = {}
+    opts[:class] = cell[:class] if cell[:class].present?
+    opts[:style] = cell[:style] if cell[:style].present?
+
+    r = if cell[:data].is_a?(Proc)
+          cell[:data].arity.zero? ? cell[:data].call : cell[:data].call(record)
+        else
+          record.send(cell[:data])
+        end
+    [r, opts]
   end
 end

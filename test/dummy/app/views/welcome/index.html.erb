@@ -12,7 +12,9 @@
                                     {:title => "City", :data => lambda{|e|e.address.city}},
                                     {:title => "State", :data => lambda{|e|e.address.state}},
                                     {:title => "Country", :data => lambda{|e|e.address.country}}
-                                    ] ) %>
+                                    ],
+                         :tfooter => {:style => "font-size:30px"},
+                         :footer => [{:data => proc{|e| e.map{|r| r.name[0]}.join("*")}}] ) %>
 </p>
 
 <p>
