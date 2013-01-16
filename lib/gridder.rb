@@ -103,8 +103,10 @@ private
 
     r = if cell[:data].is_a?(Proc)
           cell[:data].arity.zero? ? cell[:data].call : cell[:data].call(record)
-        else
+        elsif record.respond_to?(cell[:data])
           record.send(cell[:data])
+        elsif cell[:data].is_a?(String)
+          cell[:data]
         end
     [r, opts]
   end
